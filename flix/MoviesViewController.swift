@@ -6,17 +6,32 @@
 //  Copyright © 2016 Shea Ketsdever. All rights reserved.
 //
 
+
+// for detail view: segue, prepareforsegue
+
 import UIKit
 import AFNetworking
 import MBProgressHUD
 
 class MoviesViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
+    @IBOutlet var screenView: UIView!
+    @IBOutlet weak var networkErrorView: UIView!
     @IBOutlet weak var tableView: UITableView!
     var movies: [NSDictionary]?
     
+    let CellIdentifier = "TableCellView"
+    var checked: [Bool]!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        // hide the network error message
+        self.networkErrorView.hidden = true
+        self.tableView.frame.origin.y = 0
+        
+        /*checked = [Bool](count: tableView.numberOfRowsInSection(<#T##section: Int##Int#>), repeatedValue: false)
+        tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: CellIdentifier)*/
         
         // Initialize a UIRefreshControl
         let refreshControl = UIRefreshControl()
@@ -48,12 +63,20 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
                     if let responseDictionary = try! NSJSONSerialization.JSONObjectWithData( data, options:[]) as? NSDictionary {
                     
                         self.movies = responseDictionary["results"] as? [NSDictionary]
-                        self.tableView.reloadData()
-                        
-                        // Hide HUD once the network request comes back (must be done on main UI thread)
-                        MBProgressHUD.hideHUDForView(self.view, animated: true)
                     }
+                } else {
+                    //if error?.code == 503 {
+                    // bring to front and un-hide view
+                self.screenView.bringSubviewToFront(self.networkErrorView)
+                self.tableView.frame.origin.y = self.tableView.frame.origin.y + self.networkErrorView.frame.height
+                self.networkErrorView.hidden = false
                 }
+            
+            // Hide HUD once the network request comes back (must be done on main UI thread)
+            MBProgressHUD.hideHUDForView(self.view, animated: true)
+            
+            self.tableView.reloadData()
+            
             })
         
         task.resume()
@@ -63,6 +86,10 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
     // Updates the tableView with the new data
     // Hides the RefreshControl
     func refreshControlAction(refreshControl: UIRefreshControl) {
+        
+        // hide the network error message
+        self.networkErrorView.hidden = true
+        self.tableView.frame.origin.y = 0
         
         // Create the NSURLRequest (myRequest)
         let apiKey = "1d3134ee9fc0c2080bc1733793c9dd52"
@@ -86,18 +113,25 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
                     
                     // Use the new data to update the data source
                     self.movies = responseDictionary["results"] as? [NSDictionary]
-                    self.tableView.reloadData()
                     
-                    // Hide HUD once the network request comes back (must be done on main UI thread)
-                    MBProgressHUD.hideHUDForView(self.view, animated: true)
                     
                     // Reload the tableView now that there is new data
                     self.tableView.reloadData()
                     
-                    // Tell the refreshControl to stop spinning
-                    refreshControl.endRefreshing()
                 }
+            } else {
+                self.screenView.bringSubviewToFront(self.networkErrorView)
+                self.tableView.frame.origin.y = self.tableView.frame.origin.y + self.networkErrorView.frame.height
+                self.networkErrorView.hidden = false
             }
+            
+            self.tableView.reloadData()
+            
+            // Hide HUD once the network request comes back (must be done on main UI thread)
+            MBProgressHUD.hideHUDForView(self.view, animated: true)
+            
+            // Tell the refreshControl to stop spinning
+            refreshControl.endRefreshing()
         });
         task.resume()
     }
@@ -106,6 +140,23 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    
+    /*func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        tableView.deselectRowAtIndexPath(indexPath, animated: true)
+        checked[indexPath.row] = !checked[indexPath.row]
+        tableView.reloadRowsAtIndexPaths([indexPath], withRowAnimation: .Automatic)
+    }
+    
+    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCellWithIdentifier(CellIdentifier, forIndexPath: indexPath) as UITableViewCell
+        cell.textLabel?.text = data[indexPath.row]
+        if checked[indexPath.row] {
+            cell.accessoryType = .Checkmark
+        } else {
+            cell.accessoryType = .None
+        }
+        return cell
+    }*/
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if let movies = movies {

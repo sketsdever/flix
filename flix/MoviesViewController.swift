@@ -12,6 +12,8 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
 
     @IBOutlet weak var tableView: UITableView!
     
+    //var names = ["Sumeet", "Charlie", "Kingsley", "Bob", "Sally"]
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -27,15 +29,24 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 20
+        return 100
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         
-        let cell = tableView.dequeueReusableCellWithIdentifier("MovieCell", forIndexPath: indexPath)
+        let cell = UITableViewCell()
+        let row = indexPath.row
+        let section = indexPath.section
+        //let name = names[row]
+        cell.textLabel?.text = "Section: \(section), Row \(row)"
+        print(row)
+        return cell
+        
+        /*let cell = tableView.dequeueReusableCellWithIdentifier("MovieCell", forIndexPath: indexPath)
+        
         cell.textLabel!.text = "row \(indexPath.row)"
         print("row \(indexPath.row)")
-        return cell
+        return cell*/
     }
     
 

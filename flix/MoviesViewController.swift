@@ -7,12 +7,12 @@
 //
 
 import UIKit
+import AFNetworking
 
 class MoviesViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
     @IBOutlet weak var tableView: UITableView!
-    
-    //var names = ["Sumeet", "Charlie", "Kingsley", "Bob", "Sally"]
+    var movies: [NSDictionary]?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -21,6 +21,31 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         
         tableView.dataSource = self
         tableView.delegate = self
+        
+        let apiKey = "1d3134ee9fc0c2080bc1733793c9dd52"
+        let url = NSURL(string: "https://api.themoviedb.org/3/movie/now_playing?api_key=\(apiKey)")
+        let request = NSURLRequest(
+            URL: url!,
+            cachePolicy: NSURLRequestCachePolicy.ReloadIgnoringLocalCacheData,
+            timeoutInterval: 10)
+        
+        let session = NSURLSession(
+            configuration: NSURLSessionConfiguration.defaultSessionConfiguration(),
+            delegate: nil,
+            delegateQueue: NSOperationQueue.mainQueue()
+        )
+        
+        let task: NSURLSessionDataTask = session.dataTaskWithRequest(request, completionHandler: { (dataOrNil, response, error) in if let data = dataOrNil {
+            
+                if let responseDictionary = try! NSJSONSerialization.JSONObjectWithData( data, options:[]) as? NSDictionary {
+                    
+                        self.movies = responseDictionary["results"] as? [NSDictionary]
+                        self.tableView.reloadData()
+                }
+            }
+        })
+        
+        task.resume()
     }
 
     override func didReceiveMemoryWarning() {
@@ -29,24 +54,39 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 100
+        if let movies = movies {
+            return movies.count
+        } else {
+            return 0
+        }
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         
-        let cell = UITableViewCell()
+        /*let cell = UITableViewCell()
         let row = indexPath.row
         let section = indexPath.section
-        //let name = names[row]
         cell.textLabel?.text = "Section: \(section), Row \(row)"
         print(row)
-        return cell
-        
-        /*let cell = tableView.dequeueReusableCellWithIdentifier("MovieCell", forIndexPath: indexPath)
-        
-        cell.textLabel!.text = "row \(indexPath.row)"
-        print("row \(indexPath.row)")
         return cell*/
+    
+        let cell = tableView.dequeueReusableCellWithIdentifier("movieCell", forIndexPath: indexPath) as! movieCell
+        let movie = movies![indexPath.row]
+        let title = movie["title"] as!  String
+        let overview = movie["overview"] as! String
+        
+        let baseUrl = "http://image.tmdb.org/t/p/w500"
+        let posterPath = movie["poster_path"] as! String
+        let imageUrl = NSURL(string: baseUrl + posterPath)
+        
+        
+        cell.titleLabel.text = title
+        cell.overviewLabel.text = overview
+        cell.posterView.setImageWithURL(imageUrl!)
+        
+        
+        print("row \(indexPath.row)")
+        return cell
     }
     
 

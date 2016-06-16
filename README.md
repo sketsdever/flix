@@ -17,9 +17,11 @@ The following **optional** features are implemented:
 
 - [x] User sees an error message when there's a networking error.
 - [ ] Movies are displayed using a CollectionView instead of a TableView.
-- [ ] User can search for a movie.
+- [x] User can search for a movie.
 - [ ] All images fade in as they are loading.
 - [ ] Customize the UI.
+- [x] Users can view a separate screen with the larger movie poster by clicking on the movie in tableView. the new screen uses scrollview and a slightly transparent frame to load the title and overview of the movie. The frame adjusts to the size of each movie's title and overview.
+- [x] Added tab navigation at the bottom of the screen so users can view either now playing or top rated movies. Incorporated images from the noun project.
 
 The following **additional** features are implemented:
 
@@ -47,6 +49,8 @@ Describe any challenges encountered while building the app.
 List an 3rd party libraries, icons, graphics, or other assets you used in your app.
 
 - [AFNetworking](https://github.com/AFNetworking/AFNetworking) - networking task library
+- play by Gregor Črešnar from the Noun Project
+- Star by Marek Polakovic from the Noun Project
 
 ## License
 

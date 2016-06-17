@@ -18,6 +18,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
     @IBOutlet weak var searchField: UISearchBar!
     @IBOutlet var screenView: UIView!
     @IBOutlet weak var networkErrorView: UIView!
+    @IBOutlet weak var networkErrorImageView: UIImageView!
     @IBOutlet weak var tableView: UITableView!
     
     var movies: [NSDictionary]?
@@ -29,6 +30,8 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        networkErrorImageView.image = UIImage(named: "network_error")
         
         // hide the network error message
         self.networkErrorView.hidden = true
@@ -98,8 +101,6 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
             // For each item, return true if the item should be included and false if the
             // item should NOT be included
             
-            // filteredData = movies?.filter { $0.0.containsString(searchText) }
-            
             filteredData = movies?.filter({ (movie) -> Bool in
                 let dataItem = movie["title"] as! String
                 if dataItem.rangeOfString(searchText, options: .CaseInsensitiveSearch) != nil {
@@ -120,7 +121,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         searchField.showsCancelButton = false
         searchField.text = ""
         filteredData = movies
-        
+        tableView.reloadData()
         searchField.resignFirstResponder()
     }
     
@@ -193,8 +194,6 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         } else {
             return 0
         }
-        
-        
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
@@ -208,10 +207,6 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         let baseUrl = "http://image.tmdb.org/t/p/w500"
         if let posterPath = movie["poster_path"] as? String {
             let imageUrl = NSURL(string: baseUrl + posterPath)
-            
-            let imageRequest = NSURLRequest(URL: imageUrl!)
-            
-            
             
             cell.posterView.setImageWithURL(imageUrl!)
         }
@@ -229,12 +224,9 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         
-        print("prepare for segue")
-        
-        
         let cell = sender as! UITableViewCell
         let indexPath = tableView.indexPathForCell(cell)
-        let movie = movies![indexPath!.row]
+        let movie = filteredData![indexPath!.row]
         
         let detailViewController = segue.destinationViewController as! DetailedViewController
         

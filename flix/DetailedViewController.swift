@@ -15,6 +15,8 @@ class DetailedViewController: UIViewController {
     @IBOutlet weak var overviewLabel: UILabel!
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var infoView: UIView!
+    @IBOutlet weak var releaseDateLabel: UILabel!
+    @IBOutlet weak var webButton: UIButton!
     
     var movie: NSDictionary!
     
@@ -29,9 +31,17 @@ class DetailedViewController: UIViewController {
         overviewLabel.text = overview
         overviewLabel.sizeToFit()
         
+        let releaseDate = movie["release_date"] as? String
+        //releaseDate = releaseDate?.substringFromIndex(1)
+        //releaseDate = releaseDate?.substringToIndex(10)
+        releaseDateLabel.text = releaseDate
+        releaseDateLabel.sizeToFit()
+        
+        infoView.bringSubviewToFront(webButton)
+        
         infoView.sizeToFit()
         
-        let newFrame = CGRectMake(infoView.frame.origin.x, infoView.frame.origin.y, infoView.frame.size.width, titleLabel.frame.size.height + overviewLabel.frame.size.height + 40)
+        let newFrame = CGRectMake(infoView.frame.origin.x, infoView.frame.origin.y, infoView.frame.size.width, titleLabel.frame.size.height + overviewLabel.frame.size.height + releaseDateLabel.frame.size.height + 50)
         infoView.frame = newFrame;
         
         scrollView.contentSize = CGSize(width:scrollView.frame.size.width, height: infoView.frame.origin.y + infoView.frame.size.height)
@@ -49,6 +59,14 @@ class DetailedViewController: UIViewController {
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    
+    @IBAction func loadWebPage(sender: AnyObject) {
+        let url : NSURL = NSURL(string: "http://www.fandango.com/")!
+        if UIApplication.sharedApplication().canOpenURL(url) {
+            UIApplication.sharedApplication().openURL(url)
+        }
     }
     
 

@@ -24,12 +24,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         nowPlayingViewController.endpoint = "now_playing"
         nowPlayingNavigationController.tabBarItem.title = "Now Playing"
         nowPlayingNavigationController.tabBarItem.image = UIImage(named: "now_playing")
+        nowPlayingNavigationController.navigationBar.backgroundColor = (UIColor).blackColor()
+        //nowPlayingNavigationController.navigationBar.tintColor = .blackColor()
+        //nowPlayingNavigationController.navigationBar.alpha = 0.5
         
         let topRatedNavigationController = storyboard.instantiateViewControllerWithIdentifier("MoviesNavigationController") as! UINavigationController
         let topRatedViewController = topRatedNavigationController.topViewController as! MoviesViewController
         topRatedViewController.endpoint = "top_rated"
         topRatedNavigationController.tabBarItem.title = "Top Rated"
         topRatedNavigationController.tabBarItem.image = UIImage(named: "top_rated")
+        
+        /*
+        let bookmarksNavigationController = storyboard.instantiateViewControllerWithIdentifier("MoviesNavigationController") as! UINavigationController
+        let bookmarksViewController = bookmarksNavigationController.topViewController as! BookmarksViewController
+       // bookmarksViewController.endpoint = "saved"
+        bookmarksViewController.tabBarItem.title = "Bookmarks"
+        bookmarksViewController.tabBarItem.image = UIImage(named: "bookmark")*/
+
         
         let tabBarController = UITabBarController()
         tabBarController.viewControllers = [nowPlayingNavigationController, topRatedNavigationController]
